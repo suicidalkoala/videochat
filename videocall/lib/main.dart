@@ -21,10 +21,11 @@ class Meeting extends StatefulWidget {
 
 class _MeetingState extends State<Meeting> {
   final serverText = TextEditingController();
-  final roomText = TextEditingController(text: "plugintestroom");
-  final subjectText = TextEditingController(text: "My Plugin Test Meeting");
-  final nameText = TextEditingController(text: "Plugin Test User");
-  final emailText = TextEditingController(text: "fake@email.com");
+  final roomText = TextEditingController(text: "testroom");
+  final subjectText = TextEditingController(text: "Test Meeting");
+  final nameText = TextEditingController(text: "Username");
+  final emailText = TextEditingController(text: "123@email.com");
+  
   final iosAppBarRGBAColor =
       TextEditingController(text: "#0080FF80"); //transparent blue
   bool? isAudioOnly = false;
@@ -52,8 +53,10 @@ class _MeetingState extends State<Meeting> {
     double width = MediaQuery.of(context).size.width;
     return MaterialApp(
       home: Scaffold(
+        backgroundColor: Colors.brown[50],
         appBar: AppBar(
-          title: const Text('example'),
+          title: const Text('SocialHub'),
+          backgroundColor: Colors.brown[900],
         ),
         body: Container(
           padding: const EdgeInsets.symmetric(
@@ -69,6 +72,8 @@ class _MeetingState extends State<Meeting> {
                     ),
                     Container(
                         width: width * 0.60,
+                        color: Colors.brown[800],
+
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Card(
@@ -95,17 +100,27 @@ class _MeetingState extends State<Meeting> {
 
   Widget meetConfig() {
     return SingleChildScrollView(
+      
       child: Column(
         children: <Widget>[
           SizedBox(
             height: 16.0,
           ),
-          TextField(
-            controller: serverText,
-            decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: "Server URL",
-                hintText: "Hint: Leave empty for meet.jitsi.si"),
+          SizedBox(
+            height: 64.0,
+            width: double.maxFinite,
+            child: ElevatedButton(
+              onPressed: () {
+                _joinFromUrl();
+              },
+              child: Text(
+                "Join From Link",
+                style: TextStyle(color: Colors.white),
+              ),
+              style: ButtonStyle(
+                  backgroundColor:
+                      MaterialStateColor.resolveWith((states) => Colors.brown)),
+            ),
           ),
           SizedBox(
             height: 14.0,
@@ -150,21 +165,21 @@ class _MeetingState extends State<Meeting> {
           SizedBox(
             height: 14.0,
           ),
-          TextField(
-            controller: iosAppBarRGBAColor,
-            decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: "AppBar Color(IOS only)",
-                hintText: "Hint: This HAS to be in HEX RGBA format"),
-          ),
+          // TextField(
+          //   controller: iosAppBarRGBAColor,
+          //   decoration: InputDecoration(
+          //       border: OutlineInputBorder(),
+          //       labelText: "AppBar Color(IOS only)",
+          //       hintText: "Hint: This HAS to be in HEX RGBA format"),
+          // ),
           SizedBox(
             height: 14.0,
           ),
-          CheckboxListTile(
-            title: Text("Audio Only"),
-            value: isAudioOnly,
-            onChanged: _onAudioOnlyChanged,
-          ),
+          // CheckboxListTile(
+          //   title: Text("Audio Only"),
+          //   value: isAudioOnly,
+          //   onChanged: _onAudioOnlyChanged,
+          // ),
           SizedBox(
             height: 14.0,
           ),
@@ -193,12 +208,12 @@ class _MeetingState extends State<Meeting> {
                 _joinMeeting();
               },
               child: Text(
-                "Join Meeting",
+                "Create Meeting",
                 style: TextStyle(color: Colors.white),
               ),
               style: ButtonStyle(
                   backgroundColor:
-                      MaterialStateColor.resolveWith((states) => Colors.blue)),
+                      MaterialStateColor.resolveWith((states) => Colors.brown)),
             ),
           ),
           SizedBox(
@@ -227,7 +242,38 @@ class _MeetingState extends State<Meeting> {
     });
   }
 
+  _joinFromUrl() async {
+    String? serverid = await showDialog(
+      context: context,
+      builder: (context) => URLdialog(),
+    );
+    if (serverid == null) {
+      showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+                content: Text("Enter Valid URL"),
+              ));
+    } else {
+      if (serverid.startsWith("https://meet.jit.si/")) {
+        serverid = serverid.replaceAll("https://meet.jit.si/", "");
+        debugPrint(serverid);
+        roomText.text = serverid;
+        _joinMeeting();
+      } else {
+        showDialog(
+            context: context,
+            builder: (ctx) => AlertDialog(
+                  content: Text("Enter Valid URL"),
+                ));
+      }
+    }
+    //debugPrint(serverid);
+  }
+
   _joinMeeting() async {
+    //JitsiMeet.r
+    
+    JitsiMeet.closeMeeting();
     String? serverUrl = serverText.text.trim().isEmpty ? null : serverText.text;
     // Enable or disable any feature flag here
     // If feature flag are not provided, default values will be used
@@ -264,7 +310,11 @@ class _MeetingState extends State<Meeting> {
         "height": "100%",
         "enableWelcomePage": true,
         "chromeExtensionBanner": null,
-        "userInfo": {"displayName": nameText.text}
+        "userInfo": {"displayName": nameText.text},
+        "enableAddPeople": false,
+        "enableInvite": false,
+        "disableInviteFunctions": false,
+        "invite.enabled": false
       };
 
     debugPrint("JitsiMeetingOptions: $options");
@@ -306,3 +356,50 @@ class _MeetingState extends State<Meeting> {
     debugPrint("_onError broadcasted: $error");
   }
 }
+
+class URLdialog extends StatefulWidget {
+  const URLdialog({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  _URLdialogState createState() => _URLdialogState();
+}
+
+class _URLdialogState extends State<URLdialog> {
+  TextEditingController st = TextEditingController();
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      actions: [
+        SizedBox(
+          
+          height: 64.0,
+          width: double.maxFinite,
+          child: ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).pop(st.text);
+            },
+            child: Text(
+              "Submit",
+              style: TextStyle(color: Colors.white),
+            ),
+            style: ButtonStyle(
+                backgroundColor:
+                    MaterialStateColor.resolveWith((states) => Colors.brown)),
+          ),
+        )
+      ],
+      content: TextField(
+        controller: st,
+        decoration: InputDecoration(
+          border: OutlineInputBorder(),
+          labelText: "Enter Joining Link",
+          //hintText: "Hint: This HAS to be in HEX RGBA format"),
+        ),
+      ),
+    );
+  }
+}
+
+//https://meet.jit.si/plugintestroom
