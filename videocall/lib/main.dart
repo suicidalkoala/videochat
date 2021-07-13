@@ -234,6 +234,8 @@ class _MeetingState extends State<Meeting> {
     // Full list of feature flags (and defaults) available in the README
     Map<FeatureFlagEnum, bool> featureFlags = {
       FeatureFlagEnum.WELCOME_PAGE_ENABLED: false,
+      FeatureFlagEnum.ADD_PEOPLE_ENABLED: false,
+      FeatureFlagEnum.INVITE_ENABLED: false,
     };
     if (!kIsWeb) {
       // Here is an example, disabling features for each platform
