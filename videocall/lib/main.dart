@@ -165,21 +165,11 @@ class _MeetingState extends State<Meeting> {
           SizedBox(
             height: 14.0,
           ),
-          // TextField(
-          //   controller: iosAppBarRGBAColor,
-          //   decoration: InputDecoration(
-          //       border: OutlineInputBorder(),
-          //       labelText: "AppBar Color(IOS only)",
-          //       hintText: "Hint: This HAS to be in HEX RGBA format"),
-          // ),
+          
           SizedBox(
             height: 14.0,
           ),
-          // CheckboxListTile(
-          //   title: Text("Audio Only"),
-          //   value: isAudioOnly,
-          //   onChanged: _onAudioOnlyChanged,
-          // ),
+         
           SizedBox(
             height: 14.0,
           ),
@@ -256,7 +246,6 @@ class _MeetingState extends State<Meeting> {
     } else {
       if (serverid.startsWith("https://meet.jit.si/")) {
         serverid = serverid.replaceAll("https://meet.jit.si/", "");
-        debugPrint(serverid);
         roomText.text = serverid;
         _joinMeeting();
       } else {
@@ -267,7 +256,6 @@ class _MeetingState extends State<Meeting> {
                 ));
       }
     }
-    //debugPrint(serverid);
   }
 
   _joinMeeting() async {
@@ -395,11 +383,9 @@ class _URLdialogState extends State<URLdialog> {
         decoration: InputDecoration(
           border: OutlineInputBorder(),
           labelText: "Enter Joining Link",
-          //hintText: "Hint: This HAS to be in HEX RGBA format"),
         ),
       ),
     );
   }
 }
 
-//https://meet.jit.si/plugintestroom
